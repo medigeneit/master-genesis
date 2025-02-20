@@ -16,20 +16,6 @@ class MasterGenesisServiceProvider extends ServiceProvider
   {
     Route::middleware('api')->prefix('/api')->group(__DIR__ . '/../routes/api.php');
 
-    // ->group(function () {
-
-    //   // Route::get('/', function () {
-    //   //   return 'd';
-    //   // });
-    // });
-
-    // Load routes
-    $this->loadRoutesFrom(__DIR__ . '/../routes/api.php');
-
-    // Route::middleware('api')
-    // ->prefix('api')
-    // ->group(base_path('routes/api.php'));
-
     // Load migrations
     $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
