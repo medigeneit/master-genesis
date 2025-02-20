@@ -19,7 +19,8 @@ class SubjectInfoForBookingResource extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
-            "course" => $this->course->name ?? '',
+            'course' => $this->whenLoaded('course', fn () => new CourseResource($this->course)),
+
         ];
     }
 }

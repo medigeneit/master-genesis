@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('/batch-data')->group(function () {
-  Route::get('/{batch_id}', [BatchController::class, 'batch_info']);
-  Route::get('/batches/all', [BatchController::class, 'batches']);
-  Route::patch('/batches/{batch_id}/update-module-id/{module_id}', [BatchController::class, 'update_batch_module']);
+Route::prefix('/batches')->group(function () {
+  Route::get('/', [BatchController::class, 'batches']);
+  Route::get('/{batch}', [BatchController::class, 'batch_info']);
+  Route::patch('/{batch}', [BatchController::class, 'update_batch_module']);
 });
 
 Route::get('/faculty-data/all', [BatchController::class, 'faculties']);

@@ -10,25 +10,22 @@ use Medigeneit\MasterGenesis\Resources\BatchInfoForBookingCollection;
 use Medigeneit\MasterGenesis\Resources\BatchInfoForBookingResource;
 use Medigeneit\MasterGenesis\Resources\FacultyInfoForBookingResource;
 use Medigeneit\MasterGenesis\Resources\SubjectInfoForBookingResource;
+use Medigeneit\MasterGenesis\Models\Batch;
 
 class BatchController extends Controller
 {
-  function batch_info($batchId = null)
+  function batch_info(Batch $batch)
   {
 
     // $batch = Batches::not_expired()->find($batchId);
-    $batch = \Medigeneit\MasterGenesis\Models\Batch::find($batchId);
-
-    $responseCode = $batch ? 200 : 404;
-    $message = $batch ? "" : "Batch Not Found";
 
     return response(
       [
-        'exists' => (bool) $batch,
-        'batch' => $batch ? BatchInfoForBookingResource::make($batch) : null,
-        'message' => $message
-      ],
-      $responseCode
+        'status' => true,
+        'exists' => true,
+        'batch' => BatchInfoForBookingResource::make($batch),
+        'message' => ""
+      ]
     );
   }
 
@@ -37,7 +34,7 @@ class BatchController extends Controller
 
     // return self::class;
 
-    $batches =  \Medigeneit\MasterGenesis\Models\Batch::query();
+    $batches =  Batch::query();
 
     $batches->with([
       'session',
@@ -120,16 +117,12 @@ class BatchController extends Controller
     );
   }
 
-  function update_batch_module($batchId, $moduleId)
+  function update_batch_module(Batch $batch, Request $request)
   {
+    
+    $request->validate(['moduleId' => 'required']);
 
-    $batch = \Medigeneit\MasterGenesis\Models\Batch::find($batchId);
-
-    if (!$batch) {
-      return response(['status' => false, 'message' => "Batch Not Found"]);
-    }
-
-    $batch->update(['module_id' => $moduleId]);
+    $batch->update(['module_id' => $request->moduleId]);
 
     return response(['status' => true, 'message' => "Success!"]);
   }
@@ -148,8 +141,15 @@ class BatchController extends Controller
       $subjects->whereIn('id', explode(",", $subject_ids));
     });
 
+    $chunkedSubjects = [];
+    $subjects->chunkById(500, function ($chunk) use (&$chunkedSubjects) {
+        foreach ($chunk as $subject) {
+            $chunkedSubjects[] = $subject;
+        }
+    });
+
     return response([
-      'subjects' => SubjectInfoForBookingResource::collection($subjects->get()),
+      'subjects' => SubjectInfoForBookingResource::collection($chunkedSubjects),
     ]);
   }
 
@@ -175,8 +175,15 @@ class BatchController extends Controller
     //     'binding' => $faculties->getBindings(),
     // ];
 
+    $chunkedFaculties = [];
+    $faculties->chunkById(500, function ($chunk) use (&$chunkedFaculties) {
+        foreach ($chunk as $faculty) {
+            $chunkedFaculties[] = $faculty;
+        }
+    });
+
     return response([
-      'faculties' => FacultyInfoForBookingResource::collection($faculties->get()),
+      'faculties' => FacultyInfoForBookingResource::collection($chunkedFaculties),
     ]);
   }
 }

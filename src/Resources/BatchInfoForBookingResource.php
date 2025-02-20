@@ -28,8 +28,8 @@ class BatchInfoForBookingResource extends JsonResource
             "module_id" => $this->module_id,
             "expired_at" => $this->expired_at,
             "expired_message" => $this->expired_message,
-            "session" => $this->getSession(),
-            "course" => $this->getCourse(),
+            "session" => $this->whenLoaded('session',$this->getSession()),
+            "course" => $this->whenLoaded('course',$this->getCourse()),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
         ];
@@ -40,7 +40,7 @@ class BatchInfoForBookingResource extends JsonResource
         return [
             'id' => $this->course->id ?? 0,
             'name' => $this->course->name ?? null,
-            'institute' => $this->getInstitute(),
+            'institute' => $this->whenLoaded('institute',$this->getInstitute()),
         ];
     }
 
