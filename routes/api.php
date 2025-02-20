@@ -16,10 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-  return $request->user();
-});
-
 Route::prefix('/batch-data')->group(function () {
   Route::get('/{batch_id}', [BatchController::class, 'batch_info']);
   Route::get('/batches/all', [BatchController::class, 'batches']);
