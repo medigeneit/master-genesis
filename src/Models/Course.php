@@ -9,6 +9,8 @@ class Course extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['department_token'];
+
     public function scopeActive($query)
     {
         return $query->where('status', 1);
