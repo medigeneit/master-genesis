@@ -24,3 +24,6 @@ Route::prefix('/batch-data')->group(function () {
 
 Route::get('/faculty-data/all', [BatchController::class, 'faculties']);
 Route::get('/subject-data/all', [BatchController::class, 'subjects']);
+
+Route::get('/content/type/{type}/code/{searchCode}', [ContentController::class, 'get_single_content']);
+Route::get('/materials-by-ids', [ContentController::class, 'materials_by_ids']);
