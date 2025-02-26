@@ -32,49 +32,41 @@ class BatchController extends Controller
     );
   }
 
-  function batches(Request $request)
+
+  protected function whenCourseIds()
   {
+    return function ($batches, $courseIds) {
+      // if (count($courseIds)) {
+      $batches->whereIn('course_id', $courseIds);
+      // }
+    };
+  }
 
-    // return self::class;
+  protected function whenCourseCategoryIds()
+  {
+    return function ($batches, $courseCategoryIds) {
+      if (count($courseCategoryIds)) {
 
-    $batches =  \Medigeneit\MasterGenesis\Models\Batch::query();
+        $batches->whereIn(
+          'id',
+          DB::table('available_batches')
+            ->select('batch_id')
+            ->whereIn('course_category_id', $courseCategoryIds)
+        );
+      }
+    };
+  }
 
-    $batches->with([
-      'session',
-      'course.institute'
-    ]);
+  protected function whenBatchIds($batchIds)
+  {
+    return function ($batches) use ($batchIds) {
+      $batches->whereIn('id', $batchIds);
+    };
+  }
 
-    $batches->where(function ($batches) use ($request) {
-
-      $courseCategoryIds = $request->course_category_ids ? explode(",", ($request->course_category_ids ?? "")) : [];
-
-      $batches->where(function ($batches) use ($courseCategoryIds) {
-
-        $batches->when($courseCategoryIds, function ($batches, $courseCategoryIds) {
-          if (count($courseCategoryIds)) {
-
-            $batches->whereIn(
-              'id',
-              DB::table('available_batches')
-                ->select('batch_id')
-                ->whereIn('course_category_id', $courseCategoryIds)
-            );
-
-            //$batches->whereIn('course_category_id', $courseCategoryIds);
-          }
-        });
-      });
-
-      $batchIds = $request->batch_ids ? explode(",", ($request->batch_ids ?? "")) : [];
-
-      $batches->orWhere(function ($batches) use ($batchIds) {
-        $batches->when(count($batchIds), function ($batches) use ($batchIds) {
-          $batches->whereIn('id', $batchIds);
-        });
-      });
-    });
-
-    $batches->when($request->search, function ($batches, $search_text) {
+  protected function whenHasSearchText()
+  {
+    return function ($batches, $search_text) {
       $search_text = trim($search_text);
 
       $searcher = function ($search_queries) use ($batches) {
@@ -107,7 +99,39 @@ class BatchController extends Controller
         $searcher($searches);
       }
       $batches->orWhere('id', $search_text);
+    };
+  }
+
+  function batches(Request $request)
+  {
+
+    // return self::class;
+
+    $batches =  \Medigeneit\MasterGenesis\Models\Batch::query();
+
+    $batches->with([
+      'session',
+      'course.institute'
+    ]);
+
+
+    $batches->where(function ($batches) use ($request) {
+
+      $courseIds = $request->course_ids ? explode(",", ($request->course_ids ?? "")) : [];
+      $courseCategoryIds = $request->course_category_ids ? explode(",", ($request->course_category_ids ?? "")) : [];
+      $batchIds = $request->batch_ids ? explode(",", ($request->batch_ids ?? "")) : [];
+
+      $batches->where(function ($batches) use ($courseCategoryIds, $courseIds) {
+        $batches->when($courseIds, $this->whenCourseIds());
+        $batches->when($courseCategoryIds, $this->whenCourseCategoryIds());
+      });
+
+      $batches->orWhere(function ($batches) use ($batchIds) {
+        $batches->when($batchIds, $this->whenBatchIds($batchIds));
+      });
     });
+
+    $batches->when($request->search, $this->whenHasSearchText());
 
     $batches->latest('id');
 
@@ -170,10 +194,7 @@ class BatchController extends Controller
       $faculties->whereIn('id', explode(",", $faculty_ids));
     });
 
-    // return [
-    //     'sql' => $faculties->toSql(),
-    //     'binding' => $faculties->getBindings(),
-    // ];
+    //return ['sql' => $faculties->toSql(), binding' => $faculties->getBindings()];
 
     return response([
       'faculties' => FacultyInfoForBookingResource::collection($faculties->get()),
