@@ -11,8 +11,8 @@ A Laravel package for batch, faculty, and subject management of GENESIS.
 
 ## Requirements
 
-- PHP >= 8.1
-- Laravel >= 8.0
+- PHP >= 8.0 or >=7.0 
+- Laravel >= 8.0 or >=9.0
 
 ## Get Started
 
