@@ -10,7 +10,6 @@ class Batch extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['module_id'];
 
     public function scopeActive($query)
     {
@@ -25,5 +24,10 @@ class Batch extends Model
     public function session()
     {
         return $this->belongsTo(Session::class);
+    }
+
+    public function master_schedule_department()
+    {
+        return $this->hasOne(MasterScheduleDepartment::class, 'id', 'department_id');
     }
 }
