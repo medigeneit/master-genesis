@@ -11,7 +11,7 @@ A Laravel package for batch, faculty, and subject management of GENESIS.
 
 ## Requirements
 
-- PHP >= 8.0 or >=7.0 
+- PHP >= 8.0 or >=7.0
 - Laravel >= 8.0 or >=9.0
 
 ## Get Started
@@ -27,3 +27,7 @@ Optionally, publish the configuration file
 ```bash
 php artisan vendor:publish --provider="Medigeneit\MasterGenesis\MasterGenesisServiceProvider"
 ```
+
+## v2.0.1 Changes
+
+- Added routes /api/master-schedule-contents
