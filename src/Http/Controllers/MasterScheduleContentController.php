@@ -4,6 +4,11 @@ namespace Medigeneit\MasterGenesis\Http\Controllers;
 
 
 use App\ScheduleTimeSlot;
+use App\ScheduleSlotEditableTimeBasic;
+use App\ScheduleSlotEditableTime;
+use App\ScheduleSlotEditableTimeFaculty;
+use App\ScheduleSlotEditableTimeMock;
+
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Medigeneit\MasterGenesis\Http\Resources\MasterScheduleContentResource;
@@ -60,5 +65,26 @@ class MasterScheduleContentController extends Controller
     return MasterScheduleContentResource::collection($slots);
   }
 
-  public function show() {}
+  public function booking_batches($bookingId)
+  {
+
+
+
+    $slotQuery = ScheduleTimeSlot::query()->where('booking_id', $bookingId);
+    $basicScheduleSlotQuery = ScheduleSlotEditableTimeBasic::query()->where('booking_id', $bookingId);
+    $disciplineScheduleSlotQuery = ScheduleSlotEditableTime::query()->where('booking_id', $bookingId);
+    $facultyScheduleSlotQuery = ScheduleSlotEditableTimeFaculty::query()->where('booking_id', $bookingId);
+    $mockScheduleSlotQuery = ScheduleSlotEditableTimeMock::query()->where('booking_id', $bookingId);
+
+
+
+    $scheduleQuery = $slotQuery->get();
+    $basicScheduleSlot = $basicScheduleSlotQuery->get();
+    $disciplineScheduleSlot = $disciplineScheduleSlotQuery->get();
+    $facultyScheduleSlot = $facultyScheduleSlotQuery->get();
+    $mockScheduleSlot = $mockScheduleSlotQuery->get();
+
+
+    return compact('scheduleQuery', 'basicScheduleSlot', 'disciplineScheduleSlot', 'facultyScheduleSlot', 'mockScheduleSlot');
+  }
 }

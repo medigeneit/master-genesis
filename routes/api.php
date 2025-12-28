@@ -36,3 +36,4 @@ Route::get('/materials-by-ids', [ContentController::class, 'materials_by_ids']);
 Route::post('/course-data/courses/{course}/department-token', [CourseController::class, 'save_department_token']);
 
 Route::get('master-schedule-contents', [MasterScheduleContentController::class, 'index']);
+Route::get('master-schedule-contents/{bookingId}/batches', [MasterScheduleContentController::class, 'booking_batches']);
