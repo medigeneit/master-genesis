@@ -1,6 +1,6 @@
 {
   "name": "medigeneit/master-genesis",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A Laravel package for batch, faculty, and subject management.",
   "type": "library",
   "license": "MIT",
